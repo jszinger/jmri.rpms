@@ -1,0 +1,5 @@
+# Generated on http://travis-ci.org/rhwood/paducah/builds/151682143 at Fri Aug 12 00:37:40 UTC 2016
+# Digitrax Inc. PR3
+SUBSYSTEM=="tty", ATTRS{idVendor}=="04d8", ATTRS{idProduct}=="ff7e", ENV{ID_MM_DEVICE_IGNORE}="1", ENV{ID_MM_CANDIDATE}="0", TAG+="udev-acl", TAG+="uaccess", SYMLINK="tty.Digitrax.PR3.$number"
+# Tripp Lite U209-000-R USB to Serial Adapter
+SUBSYSTEM=="tty", ATTRS{idVendor}=="067b", ATTRS{idProduct}=="2303", ENV{ID_MM_DEVICE_IGNORE}="1", ENV{ID_MM_CANDIDATE}="0", TAG+="udev-acl", TAG+="uaccess", SYMLINK="tty.Tripp_Lite.U209-000-R_USB_to_Serial_Adapter.$number"

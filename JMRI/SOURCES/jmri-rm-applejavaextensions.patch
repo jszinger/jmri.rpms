@@ -1,0 +1,204 @@
+diff --git java/src/apps/Apps.java java/src/apps/Apps.java
+index 8da8ad82ad..99d9d89db2 100644
+--- java/src/apps/Apps.java
++++ java/src/apps/Apps.java
+@@ -74,7 +74,7 @@ import jmri.jmrix.ConnectionConfigManager;
+ import jmri.jmrix.ConnectionStatus;
+ import jmri.jmrix.JmrixConfigPane;
+ import jmri.managers.DefaultShutDownManager;
+-import jmri.plaf.macosx.Application;
++//import jmri.plaf.macosx.Application;
+ import jmri.profile.Profile;
+ import jmri.profile.ProfileManager;
+ import jmri.profile.ProfileManagerDialog;
+@@ -508,9 +508,9 @@ public class Apps extends JPanel implements PropertyChangeListener, WindowListen
+         // for testing startup time
+         log.debug("start building menus");
+ 
+-        if (SystemType.isMacOSX()) {
+-            Application.getApplication().setQuitHandler((EventObject eo) -> handleQuit());
+-        }
++        // if (SystemType.isMacOSX()) {
++        //     Application.getApplication().setQuitHandler((EventObject eo) -> handleQuit());
++        // }
+ 
+         fileMenu(menuBar, wi);
+         editMenu(menuBar, wi);
+@@ -589,11 +589,11 @@ public class Apps extends JPanel implements PropertyChangeListener, WindowListen
+         editMenu.add(a);
+ 
+         // Put prefs in Apple's prefered area on Mac OS X
+-        if (SystemType.isMacOSX()) {
+-            Application.getApplication().setPreferencesHandler((EventObject eo) -> {
+-                doPreferences();
+-            });
+-        }
++        // if (SystemType.isMacOSX()) {
++        //     Application.getApplication().setPreferencesHandler((EventObject eo) -> {
++        //         doPreferences();
++        //     });
++        // }
+         // Include prefs in Edit menu if not on Mac OS X or not using Aqua Look and Feel
+         if (!SystemType.isMacOSX() || !UIManager.getLookAndFeel().isNativeLookAndFeel()) {
+             editMenu.addSeparator();
+diff --git java/src/apps/AppsLaunchFrame.java java/src/apps/AppsLaunchFrame.java
+index 186afd17d5..9748ab4348 100644
+--- java/src/apps/AppsLaunchFrame.java
++++ java/src/apps/AppsLaunchFrame.java
+@@ -25,8 +25,8 @@ import jmri.jmrit.operations.OperationsMenu;
+ import jmri.jmrit.roster.swing.RosterMenu;
+ import jmri.jmrit.withrottle.WiThrottleCreationAction;
+ import jmri.jmrix.ActiveSystemsMenu;
+-import jmri.plaf.macosx.Application;
+-import jmri.plaf.macosx.PreferencesHandler;
++//import jmri.plaf.macosx.Application;
++//import jmri.plaf.macosx.PreferencesHandler;
+ import jmri.util.FileUtil;
+ import jmri.util.HelpUtil;
+ import jmri.util.JmriJFrame;
+@@ -152,14 +152,14 @@ public class AppsLaunchFrame extends jmri.util.JmriJFrame {
+         // prefs
+         prefsAction = new apps.gui3.TabbedPreferencesAction(Bundle.getMessage("MenuItemPreferences"));
+         // Put prefs in Apple's prefered area on Mac OS X
+-        if (SystemType.isMacOSX()) {
+-            Application.getApplication().setPreferencesHandler(new PreferencesHandler() {
+-                @Override
+-                public void handlePreferences(EventObject eo) {
+-                    prefsAction.actionPerformed(null);
+-                }
+-            });
+-        }
++        // if (SystemType.isMacOSX()) {
++        //     Application.getApplication().setPreferencesHandler(new PreferencesHandler() {
++        //         @Override
++        //         public void handlePreferences(EventObject eo) {
++        //             prefsAction.actionPerformed(null);
++        //         }
++        //     });
++        // }
+         // Include prefs in Edit menu if not on Mac OS X or not using Aqua Look and Feel
+         if (!SystemType.isMacOSX() || !UIManager.getLookAndFeel().isNativeLookAndFeel()) {
+             editMenu.addSeparator();
+diff --git java/src/apps/gui3/Apps3.java java/src/apps/gui3/Apps3.java
+index 3e751607fa..0862e7e4a0 100644
+--- java/src/apps/gui3/Apps3.java
++++ java/src/apps/gui3/Apps3.java
+@@ -24,9 +24,9 @@ import javax.swing.JOptionPane;
+ import javax.swing.JPanel;
+ import javax.swing.JToolBar;
+ import javax.swing.WindowConstants;
+-import jmri.plaf.macosx.AboutHandler;
+-import jmri.plaf.macosx.PreferencesHandler;
+-import jmri.plaf.macosx.QuitHandler;
++//import jmri.plaf.macosx.AboutHandler;
++//import jmri.plaf.macosx.PreferencesHandler;
++//import jmri.plaf.macosx.QuitHandler;
+ import jmri.profile.Profile;
+ import jmri.profile.ProfileManager;
+ import jmri.profile.ProfileManagerDialog;
+@@ -96,9 +96,9 @@ public abstract class Apps3 extends AppsBase {
+ 
+         // create GUI
+         initializeHelpSystem();
+-        if (SystemType.isMacOSX()) {
+-            initMacOSXMenus();
+-        }
++        // if (SystemType.isMacOSX()) {
++        //     initMacOSXMenus();
++        // }
+         if (((!configOK) || (!configDeferredLoadOK)) && (!preferenceFileExists)) {
+             FirstTimeStartUpWizardAction prefsAction = new FirstTimeStartUpWizardAction("Start Up Wizard");
+             prefsAction.setApp(this);
+@@ -271,30 +271,30 @@ public abstract class Apps3 extends AppsBase {
+         }).start();
+     }
+ 
+-    protected void initMacOSXMenus() {
+-        jmri.plaf.macosx.Application macApp = jmri.plaf.macosx.Application.getApplication();
+-        macApp.setAboutHandler(new AboutHandler() {
+-
+-            @Override
+-            public void handleAbout(EventObject eo) {
+-                new AboutDialog(null, true).setVisible(true);
+-            }
+-        });
+-        macApp.setPreferencesHandler(new PreferencesHandler() {
+-
+-            @Override
+-            public void handlePreferences(EventObject eo) {
+-                new TabbedPreferencesAction(Bundle.getMessage("MenuItemPreferences")).actionPerformed();
+-            }
+-        });
+-        macApp.setQuitHandler(new QuitHandler() {
+-
+-            @Override
+-            public boolean handleQuitRequest(EventObject eo) {
+-                return handleQuit();
+-            }
+-        });
+-    }
++    // protected void initMacOSXMenus() {
++    //     jmri.plaf.macosx.Application macApp = jmri.plaf.macosx.Application.getApplication();
++    //     macApp.setAboutHandler(new AboutHandler() {
++
++    //         @Override
++    //         public void handleAbout(EventObject eo) {
++    //             new AboutDialog(null, true).setVisible(true);
++    //         }
++    //     });
++    //     macApp.setPreferencesHandler(new PreferencesHandler() {
++
++    //         @Override
++    //         public void handlePreferences(EventObject eo) {
++    //             new TabbedPreferencesAction(Bundle.getMessage("MenuItemPreferences")).actionPerformed();
++    //         }
++    //     });
++    //     macApp.setQuitHandler(new QuitHandler() {
++
++    //         @Override
++    //         public boolean handleQuitRequest(EventObject eo) {
++    //             return handleQuit();
++    //         }
++    //     });
++    // }
+ 
+     /**
+      * Configure the {@link jmri.profile.Profile} to use for this application.
+diff --git java/src/jmri/util/HelpUtil.java java/src/jmri/util/HelpUtil.java
+index b289cf9001..28ada49d7a 100644
+--- java/src/jmri/util/HelpUtil.java
++++ java/src/jmri/util/HelpUtil.java
+@@ -15,7 +15,7 @@ import javax.swing.JMenu;
+ import javax.swing.JMenuBar;
+ import javax.swing.JMenuItem;
+ import javax.swing.UIManager;
+-import jmri.plaf.macosx.Application;
++//import jmri.plaf.macosx.Application;
+ import jmri.swing.AboutDialog;
+ import org.slf4j.Logger;
+ import org.slf4j.LoggerFactory;
+@@ -91,15 +91,15 @@ public class HelpUtil {
+             helpMenu.add(new jmri.jmrit.mailreport.ReportAction());
+ 
+             // Put about dialog in Apple's prefered area on Mac OS X
+-            if (SystemType.isMacOSX()) {
+-                try {
+-                    Application.getApplication().setAboutHandler((EventObject eo) -> {
+-                        new AboutDialog(null, true).setVisible(true);
+-                    });
+-                } catch (java.lang.RuntimeException re) {
+-                    log.error("Unable to put About handler in default location", re);
+-                }
+-            }
++            // if (SystemType.isMacOSX()) {
++            //     try {
++            //         Application.getApplication().setAboutHandler((EventObject eo) -> {
++            //             new AboutDialog(null, true).setVisible(true);
++            //         });
++            //     } catch (java.lang.RuntimeException re) {
++            //         log.error("Unable to put About handler in default location", re);
++            //     }
++            // }
+             // Include About in Help menu if not on Mac OS X or not using Aqua Look and Feel
+             if (!SystemType.isMacOSX() || !UIManager.getLookAndFeel().isNativeLookAndFeel()) {
+                 helpMenu.addSeparator();

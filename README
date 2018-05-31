@@ -1,0 +1,29 @@
+RPM Packaging of JMRI
+
+Targets Fedora 27/28.
+
+Each package is in its own directory with an RPM build hierarchy.
+
+Highly experimental and currently broken
+    Should compile and pass most unit tests.
+
+spectool -g to download the SOURCES
+    spectool -g -C ../SOURCES/ usb4java.spec 
+
+get all SOURCES
+$ for d in *;do pushd $d/SPECS; spectool -g -C ../SOURCES/ *.spec; popd ;done
+
+
+rpmbuild -bs to create src.rpms
+    rpmbuild -D'_topdir ..' -bs usb4java.spec 
+
+build all SRPMS
+$ for d in *;do pushd $d/SPECS; rpmbuild -D'_topdir ..' -bs *.spec; popd ;done
+
+
+mockchain to build everything
+$ mockchain -r default -l /usr/local/mockchain/ --recurse */SRPMS/*.src.rpm
+
+The JMRI unit tests are flakey.
+
+Jython is completely not functional.

@@ -1,0 +1,9 @@
+*.jar
+*.rpm
+*.tar.bz2
+*.tar.gz
+*.tar.xz
+*.zip
+*~
+# Source from src.rpm.  Not available through spectool
+!beansbinding-1.2.1-src.zip
