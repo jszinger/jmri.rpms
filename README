@@ -22,7 +22,8 @@ $ for d in *;do pushd $d/SPECS; rpmbuild -D'_topdir ..' -bs *.spec; popd ;done
 
 
 mockchain to build everything
-$ mockchain -r default -l /usr/local/mockchain/ --recurse */SRPMS/*.src.rpm
+$ mockchain -r fedora-27-x86_64 -l /usr/local/mockchain/ --recurse */SRPMS/*.src.rpm
+$ mockchain -r fedora-28-x86_64 -l /usr/local/mockchain/ --recurse */SRPMS/*.src.rpm
 
 The JMRI unit tests are flakey.
 
