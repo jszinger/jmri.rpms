@@ -224,7 +224,7 @@ pushd lib
   rm bluecove*.jar
   rm byte-buddy-1.7.10.jar
   #cglib-nodep-2.2.2.jar
-  #checker-framework/
+  rm -rf checker-framework/
   rm -rf com/ # com/apple...
   rm commons-io-2.6.jar
   rm commons-lang3-3.7.jar
@@ -301,7 +301,7 @@ rm *.jar
 
   # Prebuilt shared libraries
   rm -rf linux
-  rm -rf macos
+  rm -rf macosx
   rm -rf windows
 popd
 
@@ -320,8 +320,8 @@ popd
 %mvn_install
 
 # TODO: unbundle these
-#mkdir -p %{buildroot}%{_jnidir}/%{name}
-#cp -a lib/       %{buildroot}%{_jnidir}/%{name}
+mkdir -p %{buildroot}%{_jnidir}/%{name}
+cp -a lib/       %{buildroot}%{_jnidir}/%{name}
 
 #TODO: make the installed program find these
 mkdir -p %{buildroot}%{_datadir}/%{name}
@@ -339,7 +339,7 @@ install -p -m 644 %{SOURCE1} %{buildroot}%{_udevrulesdir}/
 %license LICENSE.txt
 %doc README.md
 %{_datadir}/%{name}
-#%{_jnidir}/%{name}
+%{_jnidir}/%{name}
 %{_udevrulesdir}/70-jmri.rules
 
 %files javadoc -f .mfiles-javadoc
@@ -347,4 +347,4 @@ install -p -m 644 %{SOURCE1} %{buildroot}%{_udevrulesdir}/
 
 %changelog
 * Thu Mar 22 2018 J Szinger - 4.11.6-1
-- Inital package
+- Initial package
