@@ -3,16 +3,27 @@
 
 ## High priority
 * [ ] Unbundle prebuilt binaries
-* [ ] Get Jython working
+* [x] jmdns FTBS in F28
+* [x] Get Jython working
+  - update python.properties python.home
 * [ ] Pass self tests
-* [ ] jmdns FTBS in F28
+```
+[ERROR] Failures: 
+[ERROR]   TrainSwitchListsTest.testSwitchListTrainTurn:235 confirm number of lines in switch list expected:<32> but was:<31>
+```
 * [ ] Create startup scripts in `/usr/bin/`
 * [ ] what to do about `lib/security.policy` and
   `lib/test-security.policy`?
+  - `./scripts/AppScriptTemplate:OPTIONS="${OPTIONS} -Djava.security.policy=${LIBDIR}/security.policy"`
+  - install to %{_datadir}
+
 * [ ] Are any explicit Requires needed for runtime?
+  - antlr32-java for jython?
+  - openal-soft?
 
 ## Medium priority
 * [ ] Create Desktop files for GUI apps
+  - See [Pi_Icons.tar.gz](http://jmri.org/install/support/Pi_Icons.tar.gz)
 * [ ] Verify that ECMAScript works
 * [ ] Double-check JMRI BuildRequires with xmvn-depmap
 * [ ] Run rpmlint on everthing
@@ -33,3 +44,4 @@
 * [ ] AppData
   _[Fedora Packaging Guidelines for AppData Files](https://fedoraproject.org/wiki/Packaging:AppData)_
 * [ ] Create a public repository once every thing is done
+

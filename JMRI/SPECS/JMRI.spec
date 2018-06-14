@@ -1,6 +1,7 @@
 # Should unit tests be run?  Defaults to off.  Enable using
 # '--with tests'.  Useful to test packaging, but expect failures.
 %global with_tests   0%{?_with_tests:1}
+%global with_X11tests   0%{?_with_X11tests:1}
 
 # Turn off the brp-python-bytecompile script for jython
 %undefine __brp_python_bytecompile
@@ -15,6 +16,7 @@ URL:            http://jmri.org/
 Source0:        https://github.com/JMRI/JMRI/archive/v%{version}.tar.gz
 Source1:        http://rhwood.github.com/paducah/devices/70-jmri.rules
 Patch0:         jmri-rm-applejavaextensions.patch
+#Patch1:         jmri-debug-scriptengine.patch
 
 BuildArch:      noarch
 
@@ -70,8 +72,12 @@ BuildRequires:  mvn(org.usb4java:usb4java-javax)
 BuildRequires:  openal-soft-devel
 
 %if %{with_tests}
+BuildRequires:  mvn(org.antlr:antlr-runtime)
+BuildRequires:  mvn(org.objenesis:objenesis)
+%if %{with_X11tests}
+BuildRequires:  xorg-x11-server-Xvfb
+%endif
 # For tests:
-#BuildRequires:  mvn(org.objenesis:objenesis)
 #BuildRequires:  mvn(io.cucumber:cucumber-java)
 #BuildRequires:  mvn(io.cucumber:cucumber-java8)
 #BuildRequires:  mvn(io.cucumber:cucumber-junit)
@@ -103,6 +109,10 @@ This package contains javadoc for %{name}.
 %prep
 %setup -q
 %patch0
+#patch1
+
+# Tell jython where to look for its files 
+echo 'python.home = %{_datadir}/jython' >> python.properties
 
 # Dependencies not available; testing only
 %pom_remove_dep  com.github.spotbugs:spotbugs-annotations
@@ -115,11 +125,16 @@ This package contains javadoc for %{name}.
 
 %pom_add_dep com.google.code.findbugs:annotations:3.0.1
 %pom_add_dep com.google.guava:guava:18.0
+
+%if %{with_tests}
 %pom_add_dep jakarta-regexp:jakarta-regexp:1.5:test
 %pom_add_dep jline:jline:2.13:test
 %pom_add_dep net.bytebuddy:byte-buddy:1.7.10:test
+%pom_add_dep org.objenesis:objenesis:2.6:test
+%pom_add_dep org.antlr:antlr-runtime:3.2:test
 %pom_add_dep xerces:xercesImpl:2.11.0:test
 %pom_add_dep com.github.jnr:jnr-posix:3.0.41:test
+%endif
 
 # Remove Pi4J; needs armhfp (32 bit)
 %pom_remove_dep com.pi4j:pi4j-core
@@ -151,8 +166,6 @@ sed -iplaf.bak 's/jmri.plaf.PackageTest.class,//' \
 %pom_change_dep org.jogamp.joal:joal-main org.jogamp.joal:joal:2.3.2
 
 
-
-
 %if %{with_tests}
 # TODO: Unbundle these
 # Make bundled JARs known to maven
@@ -175,9 +188,9 @@ xmvn --offline install:install-file -Dfile=lib/mockito-core-2.13.0.jar \
     -DgroupId=org.mockito -DartifactId=mockito-core -Dversion=2.13.0 \
     -Dpackaging=jar
 
-xmvn --offline install:install-file -Dfile=lib/objenesis-2.2.jar \
-    -DgroupId=org.objenesis -DartifactId=objenesis -Dversion=2.2 \
-    -Dpackaging=jar
+#xmvn --offline install:install-file -Dfile=lib/objenesis-2.2.jar \
+#    -DgroupId=org.objenesis -DartifactId=objenesis -Dversion=2.2 \
+#    -Dpackaging=jar
 %endif
 
 # Use guava
@@ -200,16 +213,16 @@ rm -f java/test/jmri/util/web/BrowserFactory.java
 rm -f java/test/jmri/RunCucumberTest.java
 sed -i.s_bak 's/RunCucumberTest.class,//' java/test/jmri/PackageTest.java
 
-# Disable jmri.jmrix.openlcb.OlcbThrottleTest, since it is SLOW!
-#rm java/test/jmri/jmrix/openlcb/OlcbThrottleTest.java
-sed -i.olcb_bak 's/OlcbThrottleTest.class,//' \
-    java/test/jmri/jmrix/openlcb/PackageTest.java
-
 # Disable network tests
+rm java/test/jmri/util/zeroconf/ZeroConfServiceEventTest.java
+sed -i.jmdns_bak 's/ZeroConfServiceEventTest.class,//' \
+    java/test/jmri/util/zeroconf/PackageTest.java
+
+rm java/test/jmri/server/json/schema/JsonSchemaSocketServiceTest.java
 sed -i.jssst_bak \
-    's/JsonSchemaHttpServiceTest.class,/JsonSchemaHttpServiceTest.class/' \
-    's/JsonSchemaSocketServiceTest//' \
+    -e 's/JsonSchemaSocketServiceTest.class//' \
     java/test/jmri/server/json/schema/PackageTest.java
+#    -e 's/JsonSchemaHttpServiceTest.class,/JsonSchemaHttpServiceTest.class/' \
 
 %endif
 
@@ -307,11 +320,16 @@ popd
 
 %build
 %if %{with_tests}
-  # -j flag to skip javadoc during development
-  # run headless tests; need xvfb-run for virtual GUI tests
-  export JMRI_OPTIONS=-Djava.awt.headless=true
-  %mvn_build -j
+  echo 'log4j.category.jmri.jmrit.operations.trains.TrainSwitchListsTest=DEBUG' \    >> tests.lcf
+  %if %{with_X11tests}
+    xvfb-run %mvn_build
+  %else
+    # run headless tests; need xvfb-run for virtual GUI tests
+    export JMRI_OPTIONS=-Djava.awt.headless=true
+    %mvn_build
+  %endif
 %else
+  # Skip tests
   %mvn_build -f
 %endif
 
@@ -320,8 +338,8 @@ popd
 %mvn_install
 
 # TODO: unbundle these
-mkdir -p %{buildroot}%{_jnidir}/%{name}
-cp -a lib/       %{buildroot}%{_jnidir}/%{name}
+#mkdir -p %{buildroot}%{_jnidir}/%{name}
+#cp -a lib/       %{buildroot}%{_jnidir}/%{name}
 
 #TODO: make the installed program find these
 mkdir -p %{buildroot}%{_datadir}/%{name}
@@ -330,6 +348,7 @@ cp -a jython/    %{buildroot}%{_datadir}/%{name}
 cp -a resources/ %{buildroot}%{_datadir}/%{name}
 cp -a web/       %{buildroot}%{_datadir}/%{name}
 cp -a xml/       %{buildroot}%{_datadir}/%{name}
+install -p -m 644 lib/security.policy %{buildroot}%{_datadir}/%{name}/
 
 mkdir -p %{buildroot}%{_udevrulesdir}
 install -p -m 644 %{SOURCE1} %{buildroot}%{_udevrulesdir}/
@@ -339,7 +358,7 @@ install -p -m 644 %{SOURCE1} %{buildroot}%{_udevrulesdir}/
 %license LICENSE.txt
 %doc README.md
 %{_datadir}/%{name}
-%{_jnidir}/%{name}
+#{_jnidir}/#{name}
 %{_udevrulesdir}/70-jmri.rules
 
 %files javadoc -f .mfiles-javadoc
