@@ -7,7 +7,7 @@
 %undefine __brp_python_bytecompile
 
 Name:           JMRI
-Version:        4.11.6
+Version:        4.11.7
 Release:        1%{?dist}
 Summary:        Java Model Railroad Interface
 
@@ -269,7 +269,7 @@ pushd lib
   rm jmdns-3.5.1.jar
   rm jna-*.jar
   rm joal.jar
-  rm json-schema-validator-0.1.16.jar
+  rm json-schema-validator-0.1.19.jar
   rm jsr305.jar
   rm jul-to-slf4j-1.7.25.jar
   rm junit-4.12.jar
@@ -365,5 +365,5 @@ install -p -m 644 %{SOURCE1} %{buildroot}%{_udevrulesdir}/
 %license LICENSE.txt
 
 %changelog
-* Thu Mar 22 2018 J Szinger - 4.11.6-1
+* Sat Jun 23 2018 James Szinger <jszinger@gmail.com> - 4.11.7-1
 - Initial package
