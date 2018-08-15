@@ -113,6 +113,10 @@ This package contains javadoc for %{name}.
 %prep
 %setup -q
 %patch0
+#patch1
+
+# Tell jython where to look for its files 
+echo 'python.home = %{_datadir}/jython' >> python.properties
 
 # Tell jython where to look for its files 
 echo 'python.home = %{_datadir}/jython' >> python.properties
@@ -342,7 +346,7 @@ popd
   %endif
 %else
   # Skip tests
-  %mvn_build -f #--post dependency:resolve
+  %mvn_build -f
 %endif
 
 %install
