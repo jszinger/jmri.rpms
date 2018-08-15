@@ -25,7 +25,7 @@ Source0:        https://github.com/usb4java/%{name}/archive/%{commit}/%{name}-%{
 BuildRequires: cmake
 BuildRequires: java-devel
 BuildRequires: javapackages-local
-BuildRequires: libusb-devel
+BuildRequires: libusbx-devel
 
  
 %description
@@ -36,8 +36,27 @@ between libusb and Java.
 %prep
 %autosetup -n %{name}-%{commit}
 
+# libusb_set_debug() is deprecated
+sed -idebug 's/libusb_set_debug(ctx, level);/libusb_set_option(ctx, LIBUSB_OPTION_LOG_LEVEL, level);/' src/LibUsb.c
 
 %build
+case "%{_arch}" in
+    "x86_64")
+        ARCH=x86_64
+        ;;
+    "i"[3456]"86")
+        ARCH=x86
+        ;;
+    "armv"*)
+        ARCH=arm
+        ;;
+    *)
+        echo "Unknown platform: %{_arch}"
+        ARCH=%{_arch}
+esac
+%global platform %{_os}-${ARCH}
+echo "Building for platform %{platform}"
+
 %cmake . -DCMAKE_BUILD_TYPE=Release 
 %make_build
 
@@ -53,9 +72,7 @@ jar cvf libusb4java-%{platform}.jar -C classes org
 %license LICENSE.md
 %doc README.md
 
-
-
 %changelog
-* Tue May 15 2018 J Szinger
+* Tue Aug 14 2018 J Szinger - 1.2.0-1.20160126git396d642
 - Initial package
 
