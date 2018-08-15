@@ -45,6 +45,9 @@ sed -i "s,59 Temple Place,51 Franklin Street,;s,Suite 330,Fifth Floor,;s,02111-1
 # Remove duplicate jar execution
 %pom_xpath_remove "pom:plugin[pom:artifactId='maven-jar-plugin']/pom:executions"
 
+# use default execution; needed for F28
+%pom_xpath_remove "pom:plugin[pom:artifactId='maven-javadoc-plugin']/pom:executions"
+
 %mvn_alias : "org.jenkins-ci:jmdns"
 
 %build
