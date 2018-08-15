@@ -54,7 +54,7 @@ find . -type f \( -iname "*.jar" -o -iname "*.zip" \) -print0 | xargs -t -0 %{__
 
 
 %changelog
-* Fri May 25 2018 J Szinger <szinger@lanl.gov> - 1.2.1-18.1
+* Fri May 25 2018 J Szinger - 1.2.1-18.1
 - Include pom.xml
 
 * Wed Feb 07 2018 Fedora Release Engineering <releng@fedoraproject.org> - 1.2.1-18

@@ -83,5 +83,5 @@ This package contains the API documentation for %{name}.
 
 
 %changelog
-* Thu May 24 2018 J Szinger <szinger@lanl.gov> - 1.1.1-1
+* Thu May 24 2018 J Szinger - 1.1.1-1
 - Initial package
