@@ -18,8 +18,8 @@ License:        GPLv2
 URL:            http://jmri.org/
 Source0:        https://github.com/JMRI/JMRI/archive/v%{version}.tar.gz
 Source1:        http://rhwood.github.com/paducah/devices/70-jmri.rules
+Source2:        JMRI.sh
 Patch0:         jmri-rm-applejavaextensions.patch
-#Patch1:         jmri-debug-scriptengine.patch
 
 BuildArch:      noarch
 
@@ -30,15 +30,12 @@ BuildRequires:  xmvn
 BuildRequires:  mvn(org.apache.maven.plugins:maven-install-plugin)
 BuildRequires:  mvn(org.apache.maven.plugins:maven-antrun-plugin)
 BuildRequires:  mvn(org.apache.maven.plugins:maven-clean-plugin)
-#BuildRequires:  mvn(org.apache.maven.plugins:maven-dependency-plugin)
 
 # Plugins from pom.xml
+BuildRequires:  mvn(org.codehaus.mojo:build-helper-maven-plugin)
 BuildRequires:  mvn(org.codehaus.mojo:javacc-maven-plugin)
 BuildRequires:  mvn(org.jacoco:jacoco-maven-plugin)
-BuildRequires:  mvn(org.codehaus.mojo:build-helper-maven-plugin)
-#BuildRequires:  mvn(org.codehaus.mojo:buildnumber-maven-plugin) >= 1.4
 
-# TODO: double-check with xmvn-builddep
 # Dependencies from pom.xml
 BuildRequires:  mvn(com.digi.xbee:xbjlib)
 BuildRequires:  mvn(com.fasterxml.jackson.core:jackson-annotations)
@@ -49,17 +46,22 @@ BuildRequires:  mvn(com.google.code.findbugs:jsr305)
 BuildRequires:  mvn(com.networknt:json-schema-validator)
 BuildRequires:  mvn(com.sparetimelabs:purejavacomm)
 BuildRequires:  mvn(javax.help:javahelp)
+BuildRequires:  mvn(javax.mail:javax.mail-api)
 BuildRequires:  mvn(javax.vecmath:vecmath)
+BuildRequires:  mvn(log4j:log4j:1.2.17)
+BuildRequires:  mvn(net.java.dev.javacc:javacc)
 BuildRequires:  mvn(net.java.dev.jna:jna-platform)
 BuildRequires:  mvn(net.java.jinput:jinput)
 BuildRequires:  mvn(net.jcip:jcip-annotations)
 BuildRequires:  mvn(net.sf.bluecove:bluecove)
 BuildRequires:  mvn(net.sourceforge.javacsv:javacsv)
+BuildRequires:  mvn(org.apache.commons:commons-lang3)
 BuildRequires:  mvn(org.apache.commons:commons-text)
-BuildRequires:  mvn(org.eclipse.paho:org.eclipse.paho.client.mqttv3)
+BuildRequires:  mvn(org.eclipse.jetty:jetty-servlet)
 BuildRequires:  mvn(org.eclipse.jetty.websocket:websocket-api)
 BuildRequires:  mvn(org.eclipse.jetty.websocket:websocket-server)
 BuildRequires:  mvn(org.eclipse.jetty.websocket:websocket-servlet)
+BuildRequires:  mvn(org.eclipse.paho:org.eclipse.paho.client.mqttv3)
 BuildRequires:  mvn(org.hid4java:hid4java) >= 0.5.0
 BuildRequires:  mvn(org.jdesktop:beansbinding)
 BuildRequires:  mvn(org.jdom:jdom2)
@@ -93,6 +95,8 @@ BuildRequires:  xorg-x11-server-Xvfb
 #BuildRequires:  mvn(org.seleniumhq.selenium:selenium-java)
 %endif
 
+Requires:       openal-soft
+
 
 %description
 The JMRI project is building tools for model railroad computer
@@ -113,7 +117,6 @@ This package contains javadoc for %{name}.
 %prep
 %setup -q
 %patch0
-#patch1
 
 # Tell jython where to look for its files 
 echo 'python.home = %{_datadir}/jython' >> python.properties
@@ -349,6 +352,7 @@ popd
   %mvn_build -f
 %endif
 
+
 %install
 %mvn_install
 
@@ -366,30 +370,20 @@ install -p -m 644 jmri.conf %{buildroot}%{_datadir}/%{name}/
 mkdir -p %{buildroot}%{_udevrulesdir}
 install -p -m 644 %{SOURCE1} %{buildroot}%{_udevrulesdir}/
 
-# TODO: Wrappers for DecoderPro InstallTest JmriFaceless PanelPro SoundPro
-# Merge the jpackage_script with scripts/AppScriptTemplate
-# From build.xml
-#        <make-startup-script script.name="DecoderPro"   script.class="apps.gui3.dp3.DecoderPro3"/>
-#        <make-startup-script script.name="PanelPro"      script.class="apps.PanelPro.PanelPro"/>
-#        <make-startup-script script.name="SoundPro"      script.class="apps.SoundPro.SoundPro"/>
-#        <make-startup-script script.name="InstallTest"   script.class="apps.InstallTest.InstallTest"/>
-#        <make-startup-script script.name="JmriFaceless"   script.class="apps.JmriFaceless"/>
+# Wrapper for DecoderPro InstallTest JmriFaceless PanelPro SoundPro
+mkdir -p %{buildroot}%{_bindir}
+install -p -m 755 %{SOURCE2} %{buildroot}%{_bindir}/
+ln -s JMRI.sh %{buildroot}%{_bindir}/DecoderPro
+ln -s JMRI.sh %{buildroot}%{_bindir}/InstallTest
+ln -s JMRI.sh %{buildroot}%{_bindir}/JmriFaceless
+ln -s JMRI.sh %{buildroot}%{_bindir}/PanelPro
+ln -s JMRI.sh %{buildroot}%{_bindir}/SoundPro
 
-# Standard JPackage script
-#
-# %1    main class
-# %2    flags
-# %3    options
-# %4    jars (separated by ':')
-# %5    the name of script you wish to create
-# %6    whether to prefer a jre over a sdk when finding a jvm
-#
-#%%jpackage_script apps.InstallTest.InstallTest "" "" JMRI/jmri InstallTest true
 
 %files -f .mfiles
 %license LICENSE.txt
 %doc README.md
-#%%{_bindir}/InstallTest
+%{_bindir}/*
 %{_datadir}/%{name}
 %{_udevrulesdir}/70-jmri.rules
 
